@@ -22,10 +22,11 @@ namespace OSMtoPicture
 {
     public partial class FormMain : Form
     {
-        // Program state machine
-        private static StateMachine PrgStateMachine = new StateMachine();
         private static Uri WebsiteURL = new Uri("https://www.openstreetmap.org");
+        private static StateMachine PrgStateMachine = new StateMachine();
         private static string OutputFolder = null;
+
+        private static readonly string ValidURLString = "https:\\/\\/www\\.openstreetmap\\.org(\\/#map=[0-9]{1,2}\\/[0-9.]+\\/[0-9.]+(&layers=([A-Z])){0,1}){0,1}";
 
         public FormMain()
         {
@@ -42,7 +43,7 @@ namespace OSMtoPicture
         private void webView_NavigationCompleted(object sender, Microsoft.Web.WebView2.Core.CoreWebView2NavigationCompletedEventArgs e)
         {
             // Correct website was loaded
-            if (webView.Source == WebsiteURL)
+            if (Regex.Match(webView.Source.ToString(), ValidURLString).Success)
             {
                 // Website freshly loaded
                 if (PrgStateMachine.GetCurrentState() == ProgramStates.Init)
@@ -73,6 +74,7 @@ namespace OSMtoPicture
         private void backgroundWorker_save_DoWork(object sender, DoWorkEventArgs e)
         {
             string html = (string)e.Argument;
+            e.Result = 0;
 
             // Did we recive data?
             if (html == null)
@@ -82,7 +84,37 @@ namespace OSMtoPicture
             }
 
             List<OpenSteetMapTile> listOfTiles = new List<OpenSteetMapTile>();
-            MatchCollection mc = Regex.Matches(html, @"https:\/\/tile\.openstreetmap\.org\/([0-9]+)\/([0-9]+)\/([0-9]+)\.png");
+            string[] regexCollection = new string[6];
+            regexCollection[0] = @"https:\/\/tile\.openstreetmap\.org\/([0-9]+)\/([0-9]+)\/([0-9]+)\.png";
+            regexCollection[1] = @"https:\/\/c\.tile-cyclosm\.openstreetmap\.fr\/cyclosm\/([0-9]+)\/([0-9]+)\/([0-9]+)\.png";
+
+            string selectedRegex;
+            if (webView.Source.ToString().EndsWith("&layers=Y"))
+            {
+                selectedRegex = regexCollection[1];
+            }
+            else if (webView.Source.ToString().EndsWith("&layers=C"))
+            {
+                return;
+            }
+            else if (webView.Source.ToString().EndsWith("&layers=T"))
+            {
+                return;
+            }
+            else if (webView.Source.ToString().EndsWith("&layers=P"))
+            {
+                return;
+            }
+            else if (webView.Source.ToString().EndsWith("&layers=H"))
+            {
+                return;
+            }
+            else 
+            {
+                selectedRegex = regexCollection[0];
+            }
+
+            MatchCollection mc = Regex.Matches(html, selectedRegex);
 
             int pictureCounter = 0;
 

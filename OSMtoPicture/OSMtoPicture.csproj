@@ -65,7 +65,7 @@
     </Compile>
     <Compile Include="lib\StateMachine.cs" />
     <Compile Include="lib\template\StateMachine_Template.cs" />
-    <Compile Include="OpenStreetMapTile.cs" />
+    <Compile Include="lib\OpenStreetMapTile.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <EmbeddedResource Include="FormMain.resx">
