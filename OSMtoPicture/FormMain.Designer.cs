@@ -28,10 +28,12 @@
         /// </summary>
         private void InitializeComponent()
         {
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(FormMain));
             this.webView = new Microsoft.Web.WebView2.WinForms.WebView2();
             this.menuStrip = new System.Windows.Forms.MenuStrip();
             this.fileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.changeOutputFolderToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.removeOffsetInPictureNamesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.closeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.reloadOSMToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.savePicturesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -73,6 +75,7 @@
             // 
             this.fileToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.changeOutputFolderToolStripMenuItem,
+            this.removeOffsetInPictureNamesToolStripMenuItem,
             this.closeToolStripMenuItem});
             this.fileToolStripMenuItem.Name = "fileToolStripMenuItem";
             this.fileToolStripMenuItem.Size = new System.Drawing.Size(37, 20);
@@ -81,14 +84,21 @@
             // changeOutputFolderToolStripMenuItem
             // 
             this.changeOutputFolderToolStripMenuItem.Name = "changeOutputFolderToolStripMenuItem";
-            this.changeOutputFolderToolStripMenuItem.Size = new System.Drawing.Size(188, 22);
+            this.changeOutputFolderToolStripMenuItem.Size = new System.Drawing.Size(241, 22);
             this.changeOutputFolderToolStripMenuItem.Text = "Change output folder";
             this.changeOutputFolderToolStripMenuItem.Click += new System.EventHandler(this.changeOutputFolderToolStripMenuItem_Click);
+            // 
+            // removeOffsetInPictureNamesToolStripMenuItem
+            // 
+            this.removeOffsetInPictureNamesToolStripMenuItem.Name = "removeOffsetInPictureNamesToolStripMenuItem";
+            this.removeOffsetInPictureNamesToolStripMenuItem.Size = new System.Drawing.Size(241, 22);
+            this.removeOffsetInPictureNamesToolStripMenuItem.Text = "Remove offset in picture names";
+            this.removeOffsetInPictureNamesToolStripMenuItem.Click += new System.EventHandler(this.removeOffsetInPictureNamesToolStripMenuItem_Click);
             // 
             // closeToolStripMenuItem
             // 
             this.closeToolStripMenuItem.Name = "closeToolStripMenuItem";
-            this.closeToolStripMenuItem.Size = new System.Drawing.Size(188, 22);
+            this.closeToolStripMenuItem.Size = new System.Drawing.Size(241, 22);
             this.closeToolStripMenuItem.Text = "Close";
             this.closeToolStripMenuItem.Click += new System.EventHandler(this.closeToolStripMenuItem_Click);
             // 
@@ -143,10 +153,11 @@
             this.Controls.Add(this.statusStrip);
             this.Controls.Add(this.webView);
             this.Controls.Add(this.menuStrip);
+            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.MainMenuStrip = this.menuStrip;
             this.Name = "FormMain";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
-            this.Text = "Form1";
+            this.Text = "OSM to picture";
             this.WindowState = System.Windows.Forms.FormWindowState.Maximized;
             this.Load += new System.EventHandler(this.FormMain_Load);
             ((System.ComponentModel.ISupportInitialize)(this.webView)).EndInit();
@@ -172,6 +183,7 @@
         private System.Windows.Forms.ToolStripMenuItem savePicturesToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem changeOutputFolderToolStripMenuItem;
         private System.Windows.Forms.ToolStripStatusLabel toolStripStatusLabel_OutputFolder;
+        private System.Windows.Forms.ToolStripMenuItem removeOffsetInPictureNamesToolStripMenuItem;
     }
 }
 

@@ -70,6 +70,21 @@ namespace OSMtoPicture
             }
         }
 
+        private bool SelectOutputFolder()
+        {
+            FolderBrowserDialog fbd = new FolderBrowserDialog();
+            fbd.Description = "Select output folder";
+            fbd.SelectedPath = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+            // User confirmed dialog?
+            if (fbd.ShowDialog() != DialogResult.OK) return false;
+            // Save output folder                
+            OutputFolder = fbd.SelectedPath;
+
+            toolStripStatusLabel_OutputFolder.Text = $"Selected output folder: {OutputFolder}";
+
+            return true;
+        }
+
         #region Save pictures
         private void backgroundWorker_save_DoWork(object sender, DoWorkEventArgs e)
         {
@@ -209,15 +224,7 @@ namespace OSMtoPicture
         /// <param name="e"></param>
         private void changeOutputFolderToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            FolderBrowserDialog fbd = new FolderBrowserDialog();
-            fbd.Description = "Select output folder";
-            fbd.SelectedPath = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
-            // User confirmed dialog?
-            if (fbd.ShowDialog() != DialogResult.OK) return;
-            // Save output folder                
-            OutputFolder = fbd.SelectedPath;
-
-            toolStripStatusLabel_OutputFolder.Text = $"Selected output folder: {OutputFolder}";
+            SelectOutputFolder();
         }
 
         /// <summary>
@@ -251,7 +258,7 @@ namespace OSMtoPicture
             // No output folder selected
             if (OutputFolder == null)
             {
-                changeOutputFolderToolStripMenuItem_Click(null, EventArgs.Empty);
+                if (!SelectOutputFolder()) return;
             }
 
             // Does directory exist?
@@ -281,6 +288,55 @@ namespace OSMtoPicture
             SetProgStatus();
             StartSaveProcessAsync();
 
+        }
+
+        private void removeOffsetInPictureNamesToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if(OutputFolder == null || !Directory.Exists(OutputFolder))
+            {
+                MessageBox.Show("Output folder is not selected or does not exist", "Missing output folder", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+                return;
+            }
+
+            uint counter = 0;
+
+            string[] dirs = Directory.GetDirectories(OutputFolder);
+            foreach(string dirPath in dirs)
+            {
+                string[] pictures = Directory.GetFiles(dirPath, "*.png");
+                // Search smallest ID
+                int low_x = -1, low_y = -1;
+                foreach(string picPath in pictures)
+                {
+                    string[] fileNameSplit = Path.GetFileNameWithoutExtension(picPath).Split('_');
+                    // Check correct length
+                    if(fileNameSplit.Length != 3) continue; 
+
+                    if(low_x == -1 || Convert.ToInt32(fileNameSplit[1]) < low_x)
+                    {
+                        low_x = Convert.ToInt32(fileNameSplit[1]);
+                    }
+                    if (low_y == -1 || Convert.ToInt32(fileNameSplit[2]) < low_y)
+                    {
+                        low_y = Convert.ToInt32(fileNameSplit[2]);
+                    }
+                }
+                // Start re-naming
+                foreach (string picPath in pictures)
+                {
+                    string[] fileNameSplit = Path.GetFileNameWithoutExtension(picPath).Split('_');
+                    // Check correct length
+                    if (fileNameSplit.Length != 3) continue;
+
+                    int x = Convert.ToInt32(fileNameSplit[1]);  
+                    int y = Convert.ToInt32(fileNameSplit[2]);
+                    // Re-name
+                    File.Move(picPath,  Path.Combine(Path.GetDirectoryName(picPath), $"{fileNameSplit[0]}_{x-low_x}_{y-low_y}.png"));
+                    counter++;
+                }
+            }
+
+            MessageBox.Show($"{counter} files where re-named", "Remove offset in name", MessageBoxButtons.OK, MessageBoxIcon.Information);
         }
     }
 }
